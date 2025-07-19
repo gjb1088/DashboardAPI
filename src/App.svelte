@@ -3,6 +3,7 @@
   let data = null;
   let error = null;
 
+  // your button handler…
   async function handleFetch() {
     error = null;
     try {
@@ -12,7 +13,18 @@
       error = e?.message || 'Unknown error';
     }
   }
+
+  // card styling constant
+  const cardStyle = `
+    border:1px solid #ccc;
+    border-radius:8px;
+    padding:1rem;
+    box-shadow:2px 2px 5px rgba(0,0,0,0.1);
+    width:150px;
+    text-align:center;
+  `;
 </script>
+
 <main style="padding:2rem; font-family:sans-serif;">
   {#if !data}
     <button on:click={handleFetch} style="padding:0.5rem 1rem; font-size:1rem;">
@@ -38,14 +50,3 @@
     </div>
   {/if}
 </main>
-
-<script>
-  const cardStyle = `
-    border:1px solid #ccc;
-    border-radius:8px;
-    padding:1rem;
-    box-shadow:2px 2px 5px rgba(0,0,0,0.1);
-    width:150px;
-    text-align:center;
-  `;
-</script>
