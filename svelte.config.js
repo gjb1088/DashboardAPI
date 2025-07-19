@@ -5,8 +5,7 @@ import sveltePreprocess from 'svelte-preprocess';
 export default {
   preprocess: sveltePreprocess({
     typescript: {
-      // your tsconfig file (defaults to tsconfig.json)
-      tsconfigFile: './tsconfig.json'
+      transpileOnly: true
     }
   })
 };
