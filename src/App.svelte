@@ -1,19 +1,18 @@
-<script lang="ts">
-  import { fetchNetworkTelemetry, NetTelemetry } from './telemetry';
-  let data: NetTelemetry | null = null;
-  let error: string | null = null;
+<script>
+  import { fetchNetworkTelemetry } from './telemetry';
+  let data = null;
+  let error = null;
 
   async function handleFetch() {
     error = null;
     try {
       data = await fetchNetworkTelemetry();
       setTimeout(() => (data = null), 10000);
-    } catch (e: any) {
-      error = e.message;
+    } catch (e) {
+      error = e?.message || 'Unknown error';
     }
   }
 </script>
-
 <main style="padding:2rem; font-family:sans-serif;">
   {#if !data}
     <button on:click={handleFetch} style="padding:0.5rem 1rem; font-size:1rem;">
