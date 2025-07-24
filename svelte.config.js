@@ -1,9 +1,13 @@
-// svelte.config.js
 import preprocess from 'svelte-preprocess';
 
-export default {
-  // Tell Svelte to preprocess TS (and you can add PostCSS, SCSS, etc. here too)
-  preprocess: preprocess(),
-
-  // You can leave out `kit` entirely for a plain Vite+Svelte setup
+/** @type {import('svelte').Config} */
+const config = {
+  preprocess: preprocess({
+    // skip full type‐checking; just strip TS syntax
+    typescript: {
+      transpileOnly: true
+    }
+  })
 };
+
+export default config;
