@@ -1,39 +1,37 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { Telemetry } from './lib/types/telemetry';
-  import { getTelemetry }    from './lib/api/getTelemetry';
+  import { getTelemetry } from './lib/api/getTelemetry';
 
   let data: Telemetry | null = null;
-  let error: string | null   = null;
+  let error = '';
 
-  const URL = import.meta.env.VITE_TELEMETRY_API_URL;
-  const KEY = import.meta.env.VITE_TELEMETRY_API_KEY;
+  const API_URL = import.meta.env.VITE_TELEMETRY_API_URL as string;
+  const API_KEY = import.meta.env.VITE_TELEMETRY_API_KEY as string;
 
-  async function fetchData() {
-    data  = null;
-    error = null;
+  async function fetchIt() {
+    error = '';
     try {
-      data = await getTelemetry(URL, KEY);
+      data = await getTelemetry(API_URL, API_KEY);
     } catch (e: any) {
       error = e.message;
+      data = null;
     }
   }
 
-  onMount(fetchData);
+  onMount(fetchIt);
 </script>
 
 <main>
-  <h1>Network Telemetry</h1>
+  <button on:click={fetchIt}>Fetch Telemetry</button>
 
   {#if error}
-    <p style="color:red">Error: {error}</p>
-  {:else if !data}
-    <button on:click={fetchData}>Fetch Telemetry</button>
+    <p style="color: red">Error: {error}</p>
+  {:else if data}
+    <div>Latency: {data.latency}</div>
+    <div>Packet Loss: {data.packetLoss}</div>
+    <div>Throughput: {data.throughput}</div>
   {:else}
-    <div style="display:flex; gap:1rem">
-      <div><strong>Latency:</strong> {data.latency}</div>
-      <div><strong>Packet Loss:</strong> {data.packet_loss}</div>
-      <div><strong>Throughput:</strong> {data.throughput}</div>
-    </div>
+    <p>Loading…</p>
   {/if}
 </main>
