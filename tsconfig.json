@@ -1,7 +1,7 @@
 {
   "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
-    // Removed importsNotUsedAsValues & preserveValueImports
+    // TS5 removed these; ensure they’re gone:
     "verbatimModuleSyntax": true,
     "ignoreDeprecations": "5.0"
   },
