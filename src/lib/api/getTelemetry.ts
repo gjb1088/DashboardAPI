@@ -1,14 +1,14 @@
-import type { Telemetry } from '$lib/types/telemetry';
+import type { Telemetry } from '../types/telemetry';
+
+const API_URL = import.meta.env.VITE_TELEMETRY_API_URL || 'https://telemetry.burnthe.network';
+const API_KEY = import.meta.env.VITE_TELEMETRY_API_KEY || '0';
 
 export async function getTelemetry(): Promise<Telemetry> {
-  const url = import.meta.env.VITE_TELEMETRY_API_URL;
-  const key = import.meta.env.VITE_TELEMETRY_API_KEY;
-  const res = await fetch(url, {
-    headers: { 'X-API-Key': key }
+  const res = await fetch(`${API_URL}/api/v1/telemetry/network`, {
+    headers: { 'X-API-Key': API_KEY }
   });
   if (!res.ok) {
-    const txt = await res.text();
-    throw new Error(`Fetch failed (${res.status}): ${txt}`);
+    throw new Error(`Fetch failed: ${res.status}`);
   }
   return res.json();
 }
