@@ -1,48 +1,40 @@
-<!-- dashboard/src/App.svelte -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { getTelemetry } from './types/telemetry';
   import type { Telemetry } from './types/telemetry';
+  import { getTelemetry }    from './types/telemetry';
 
-  let data: Telemetry;
+  let data: Telemetry | null = null;
+  let error: string | null   = null;
 
-  onMount(async () => {
-    data = await getTelemetry(
-      import.meta.env.VITE_TELEMETRY_API_URL,
-      import.meta.env.VITE_TELEMETRY_API_KEY
-    );
-  });
+  async function fetchData() {
+    try {
+      data  = await getTelemetry();
+      error = null;
+    } catch (err: any) {
+      error = err.message;
+      data  = null;
+    }
+  }
+
+  onMount(fetchData);
 </script>
 
-<main>
-  <button on:click={fetchData}>Fetch Telemetry</button>
+<button on:click={fetchData}>Fetch Telemetry</button>
 
-  {#if error}
-    <p class="error">Error: {error}</p>
-  {/if}
-
-  {#if data}
-    <div class="cards">
-      <div class="card">
-        <h3>Latency</h3>
-        <p>{data.latency}</p>
-      </div>
-      <div class="card">
-        <h3>Packet Loss</h3>
-        <p>{data.packet_loss}</p>
-      </div>
-      <div class="card">
-        <h3>Throughput</h3>
-        <p>{data.throughput}</p>
-      </div>
-    </div>
-  {/if}
-</main>
+{#if data}
+  <div class="cards">
+    <div class="card">Latency: {data.latency}</div>
+    <div class="card">Packet Loss: {data.packet_loss}</div>
+    <div class="card">Throughput: {data.throughput}</div>
+  </div>
+{:else if error}
+  <p class="error">Error: {error}</p>
+{:else}
+  <p>Loading…</p>
+{/if}
 
 <style>
-  main { display: flex; flex-direction: column; align-items: center; padding: 2rem; }
-  .cards { display: flex; gap: 1rem; margin-top: 1rem; }
-  .card { padding: 1rem; border: 1px solid #ccc; border-radius: 4px; width: 150px; text-align: center; }
-  .error { color: red; margin-top: 1rem; }
-  button { padding: 0.5rem 1rem; font-size: 1rem; }
+  .cards { display: flex; gap: 1rem; }
+  .card  { padding: 1rem; border: 1px solid #ccc; border-radius: 4px; }
+  .error { color: red; }
 </style>
