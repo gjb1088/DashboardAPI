@@ -1,6 +1,15 @@
-// tsconfig.json
 {
   "extends": "@tsconfig/svelte/tsconfig.json",
-  "include": ["src/**/*"],
-  "exclude": ["node_modules/*"]
+  "compilerOptions": {
+    // remove these two entirely:
+    // "importsNotUsedAsValues": "...",
+    // "preserveValueImports": "...",
+
+    // New flag that supersedes them:
+    "verbatimModuleSyntax": true,
+
+    // Optional: silence any other deprecation warnings in TS 5+
+    "ignoreDeprecations": "5.0"
+  },
+  "include": ["src/**/*"]
 }
