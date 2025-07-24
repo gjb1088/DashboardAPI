@@ -94,6 +94,28 @@
     color: #fff;
     text-shadow: 0 0 5px #fff;
   }
+/* 1. Always allow horizontal scrolling if cards overflow */
+.cards {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;  /* space for scrollbar */
+}
+
+/* 2. Give each card a minimum width so they stay readable */
+.card {
+  min-width: 12rem;
+}
+
+/* 3. On very small screens, stack them vertically */
+@media (max-width: 480px) {
+  .cards {
+    flex-direction: column;
+    overflow-x: visible;
+  }
+  .card {
+    min-width: auto;  /* allow full width */
+    width: 100%;
+  }
+}
 </style>
 
 {#if !showing}
