@@ -7,17 +7,12 @@ export type Telemetry = {
 };
 
 export async function getTelemetry(
-  url: string,
+  endpoint: string,
   apiKey: string
 ): Promise<Telemetry> {
-  const response = await fetch(url, {
-    headers: {
-      'X-API-Key': apiKey,
-      'Content-Type': 'application/json',
-    },
+  const res = await fetch(endpoint, {
+    headers: { 'X-API-Key': apiKey }
   });
-  if (!response.ok) {
-    throw new Error(`Error ${response.status}`);
-  }
-  return response.json() as Promise<Telemetry>;
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
 }
