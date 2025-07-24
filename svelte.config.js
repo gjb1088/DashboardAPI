@@ -8,3 +8,5 @@ export default {
     paths: { base: '' }
   }
 };
+
+export default config;
