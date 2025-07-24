@@ -1,15 +1,15 @@
 import adapter from '@sveltejs/adapter-static';
-import { vitePreprocess } from '@sveltejs/kit/vite';
+import preprocess from 'svelte-preprocess';
 
-/** @type {import('@sveltejs/kit').Config} */
 const config = {
-  preprocess: vitePreprocess(),
+  preprocess: preprocess({ typescript: true }),
   kit: {
     adapter: adapter({
-      pages:  'build',
+      pages: 'build',
       assets: 'build',
       fallback: null
     }),
+    // if your site is rooted at a sub‐path, set `paths.base`
     paths: {
       base: ''
     }
