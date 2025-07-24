@@ -1,14 +1,8 @@
 {
   "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
-    // remove these two entirely:
-    // "importsNotUsedAsValues": "...",
-    // "preserveValueImports": "...",
-
-    // New flag that supersedes them:
+    // Removed importsNotUsedAsValues & preserveValueImports
     "verbatimModuleSyntax": true,
-
-    // Optional: silence any other deprecation warnings in TS 5+
     "ignoreDeprecations": "5.0"
   },
   "include": ["src/**/*"]
