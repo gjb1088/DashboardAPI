@@ -1,13 +1,12 @@
-// vite.config.ts
-import { defineConfig }     from 'vite';
-import { svelte }           from '@sveltejs/vite-plugin-svelte';
-import sveltePreprocess     from 'svelte-preprocess';
+import { defineConfig } from 'vite';
+import { svelte }       from '@sveltejs/vite-plugin-svelte';
+import preprocess       from 'svelte-preprocess';
 
 export default defineConfig({
   plugins: [
     svelte({
-      preprocess: sveltePreprocess({
-        // ⚠️ skip all type-checking errors, just transpile TS → JS
+      preprocess: preprocess({
+        // just transpile TS → JS, skip type-checking
         typescript: { transpileOnly: true }
       })
     })
