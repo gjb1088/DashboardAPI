@@ -1,12 +1,18 @@
 <script>
-  // plain JS—no TS, no type errors
   let metrics = null;
-
-  async function fetchData() {
-    const res = await fetch(
-      import.meta.env.VITE_TELEMETRY_API_URL + '/api/v1/telemetry/network',
-      { headers: { 'X-API-Key': '0000' } }
-    );
-    metrics = await res.json();
-  }
+  async function fetchData() { /* … */ }
 </script>
+
+<main>
+  <h1>Network Telemetry</h1>
+  <button on:click={fetchData}>Fetch Telemetry</button>
+
+  {#if metrics}
+    <pre>{JSON.stringify(metrics, null, 2)}</pre>
+  {/if}
+</main>
+
+<style>
+  body, main { font-family: sans-serif; }
+  h1 { color: #0ff; }
+</style>
