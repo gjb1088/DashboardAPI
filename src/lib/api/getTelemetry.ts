@@ -1,14 +1,14 @@
 import type { Telemetry } from '../types/telemetry';
 
 export async function getTelemetry(
-  url: string,
+  baseUrl: string,
   apiKey: string
 ): Promise<Telemetry> {
-  const res = await fetch(url, {
+  const res = await fetch(`${baseUrl}/api/v1/telemetry/network`, {
     headers: { 'X-API-Key': apiKey }
   });
   if (!res.ok) {
-    throw new Error(`API error ${res.status}: ${await res.text()}`);
+    throw new Error(`HTTP ${res.status}`);
   }
-  return res.json() as Promise<Telemetry>;
+  return (await res.json()) as Telemetry;
 }
