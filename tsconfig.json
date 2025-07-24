@@ -3,5 +3,5 @@
   "compilerOptions": {
     "strict": true
   },
-  "include": ["src/**/*", "svelte.config.js"]
+  "include": ["src/**/*", "src/env.d.ts"]
 }
