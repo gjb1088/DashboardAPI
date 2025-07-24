@@ -18,12 +18,12 @@
       telemetry = await getTelemetry();
       showing   = true;
 
-      // after 30s, hide the cards
+      // after 15s, hide the cards
       clearTimeout(hideTimer);
       hideTimer = setTimeout(() => {
         showing   = false;
         telemetry = null;
-      }, 30_000);
+      }, 15_000);
     } catch (err) {
       console.error(err);
       // optionally show an error card/message here
