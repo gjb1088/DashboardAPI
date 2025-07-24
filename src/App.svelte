@@ -106,15 +106,15 @@
   <div class="cards">
     <div class="card">
       <h4>Latency</h4>
-      <p>{telemetry.latency.toFixed(2)} ms</p>
+      <p>{Number(telemetry.latency).toFixed(2)} ms</p>
     </div>
     <div class="card">
       <h4>Packet Loss</h4>
-      <p>{telemetry.packet_loss.toFixed(1)} %</p>
+      <p>{Number(telemetry.packet_loss).toFixed(1)} %</p>
     </div>
     <div class="card">
       <h4>Throughput</h4>
-      <p>{telemetry.throughput.toFixed(2)} Mbps</p>
+      <p>{Number(telemetry.throughput).toFixed(2)} Mbps</p>
     </div>
   </div>
 {/if}
