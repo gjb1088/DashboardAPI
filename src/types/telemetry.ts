@@ -1,16 +1,14 @@
 export interface Telemetry {
-  latency:    string;
-  packet_loss:string;
+  latency: string;
+  packet_loss: string;
   throughput: string;
 }
 
+// make sure this is exported
 export async function getTelemetry(): Promise<Telemetry> {
-  const url = import.meta.env.VITE_TELEMETRY_API_URL;
-  const key = import.meta.env.VITE_TELEMETRY_API_KEY;
-
-  const res = await fetch(url, {
-    headers: { 'X-API-Key': key }
+  const res = await fetch(import.meta.env.VITE_TELEMETRY_API_URL + '/api/v1/telemetry/network', {
+    headers: { 'X-API-Key': import.meta.env.VITE_TELEMETRY_API_KEY }
   });
-  if (!res.ok) throw new Error(`API returned ${res.status}`);
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json();
 }
