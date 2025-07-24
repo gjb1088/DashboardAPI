@@ -1,23 +1,17 @@
 <!-- dashboard/src/App.svelte -->
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { getTelemetry } from './types/telemetry';
   import type { Telemetry } from './types/telemetry';
-  import { getTelemetry }      from './types/telemetry';
 
-  let data: Telemetry | null = null;
-  let error = '';
+  let data: Telemetry;
 
-  async function fetchData() {
-    error = '';
-    try {
-      data = await getTelemetry();
-    } catch (err: any) {
-      error = err.message;
-    }
-  }
-
-  // optional: fetch on mount
-  // onMount(fetchData);
+  onMount(async () => {
+    data = await getTelemetry(
+      import.meta.env.VITE_TELEMETRY_API_URL,
+      import.meta.env.VITE_TELEMETRY_API_KEY
+    );
+  });
 </script>
 
 <main>
