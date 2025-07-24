@@ -3,8 +3,5 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig({
   plugins: [svelte()],
-  build: {
-    // output into the "dist" folder by default
-    outDir: 'dist',
-  },
+  // You can add resolve.alias here if you like
 });
