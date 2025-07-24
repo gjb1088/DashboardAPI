@@ -1,14 +1,7 @@
+// dashboard/vite.config.ts
 import { defineConfig } from 'vite';
-import { svelte }       from '@sveltejs/vite-plugin-svelte';
-import preprocess       from 'svelte-preprocess';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig({
-  plugins: [
-    svelte({
-      preprocess: preprocess({
-        // just transpile TS → JS, skip type-checking
-        typescript: { transpileOnly: true }
-      })
-    })
-  ]
+  plugins: [svelte()],
 });
