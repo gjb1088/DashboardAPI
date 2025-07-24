@@ -1,7 +1,11 @@
-import { defineConfig } from 'vite';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { sveltekit } from '@sveltejs/kit/vite';
+import preprocess from 'svelte-preprocess';
 
-export default defineConfig({
-  plugins: [svelte()],
-  // You can add resolve.alias here if you like
-});
+/** @type {import('vite').UserConfig} */
+export default {
+  plugins: [
+    sveltekit({
+      preprocess: preprocess()
+    })
+  ]
+};
