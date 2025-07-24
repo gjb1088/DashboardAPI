@@ -1,13 +1,15 @@
+// vite.config.mjs
 import { defineConfig } from 'vite';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { svelte }         from '@sveltejs/vite-plugin-svelte';
+
+// dynamically load the ESM-only svelte-preprocess
+const { default: sveltePreprocess } = await import('svelte-preprocess');
 
 export default defineConfig({
   plugins: [
     svelte({
-      preprocess: require('svelte-preprocess')({
-        // only strip TS syntax—no type-checking
-        typescript: { transpileOnly: true }
-      })
+      // strip TS syntax but don’t type-check at build time
+      preprocess: sveltePreprocess({ typescript: { transpileOnly: true } })
     })
   ]
 });
