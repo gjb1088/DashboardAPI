@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [svelte()],
   build: {
     rollupOptions: {
-      input: resolve(__dirname, 'src/app.svelte')
+      input: resolve(__dirname, 'src/App.svelte')
     }
   }
 });
