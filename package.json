@@ -1,5 +1,5 @@
 {
-  "name": "neurodevops-dashboard",
+  "name": "my-svelte-app",
   "version": "0.1.0",
   "type": "module",
   "scripts": {
@@ -13,8 +13,8 @@
   "devDependencies": {
     "vite": "^4.5.14",
     "@sveltejs/vite-plugin-svelte": "^2.5.3",
+    "svelte-preprocess": "^5.0.0",
     "typescript": "^5.1.6",
-    "@tsconfig/svelte": "^3.0.0",
-    "svelte-preprocess": "^5.0.0"
+    "@tsconfig/svelte": "^3.0.0"
   }
 }
