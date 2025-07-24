@@ -1,12 +1,13 @@
 import { defineConfig } from 'vite';
-import { svelte }       from '@sveltejs/vite-plugin-svelte';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig({
-  plugins: [svelte()],
-  build: {
-    outDir: 'dist'
-  },
-  server: {
-    port: 3000
-  }
+  plugins: [
+    svelte({
+      preprocess: require('svelte-preprocess')({
+        // only strip TS syntax—no type-checking
+        typescript: { transpileOnly: true }
+      })
+    })
+  ]
 });
