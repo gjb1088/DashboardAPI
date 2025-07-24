@@ -1,5 +1,5 @@
 export interface Telemetry {
-  latency: string;
-  packet_loss: string;
-  throughput: string;
+  latency: number;
+  packet_loss: number;
+  throughput: number;
 }
