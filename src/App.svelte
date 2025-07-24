@@ -1,40 +1,54 @@
-<script>
-  let metrics = null;
+<!-- dashboard/src/App.svelte -->
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import type { Telemetry } from './types/telemetry';
+  import { getTelemetry }      from './types/telemetry';
+
+  let data: Telemetry | null = null;
+  let error = '';
 
   async function fetchData() {
-    console.log('🔘 button clicked');
-    // 1) Check the env var
-    const base = import.meta.env.VITE_TELEMETRY_API_URL;
-    console.log('API base URL:', base);
-
-    if (!base) {
-      console.error('🚨 VITE_TELEMETRY_API_URL is undefined!');
-      return;
-    }
-
-    const url = base + '/api/v1/telemetry/network';
-    console.log('Fetching URL:', url);
-
+    error = '';
     try {
-      const res = await fetch(url, {
-        headers: { 'X-API-Key': '0000' }
-      });
-      console.log('Fetch response status:', res.status);
-      if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
-      console.log('Received data:', data);
-      metrics = data;
-    } catch (err) {
-      console.error('Fetch failed:', err);
+      data = await getTelemetry();
+    } catch (err: any) {
+      error = err.message;
     }
   }
+
+  // optional: fetch on mount
+  // onMount(fetchData);
 </script>
 
 <main>
-  <h1>Network Telemetry</h1>
   <button on:click={fetchData}>Fetch Telemetry</button>
 
-  {#if metrics}
-    <!-- your cards markup here -->
+  {#if error}
+    <p class="error">Error: {error}</p>
+  {/if}
+
+  {#if data}
+    <div class="cards">
+      <div class="card">
+        <h3>Latency</h3>
+        <p>{data.latency}</p>
+      </div>
+      <div class="card">
+        <h3>Packet Loss</h3>
+        <p>{data.packet_loss}</p>
+      </div>
+      <div class="card">
+        <h3>Throughput</h3>
+        <p>{data.throughput}</p>
+      </div>
+    </div>
   {/if}
 </main>
+
+<style>
+  main { display: flex; flex-direction: column; align-items: center; padding: 2rem; }
+  .cards { display: flex; gap: 1rem; margin-top: 1rem; }
+  .card { padding: 1rem; border: 1px solid #ccc; border-radius: 4px; width: 150px; text-align: center; }
+  .error { color: red; margin-top: 1rem; }
+  button { padding: 0.5rem 1rem; font-size: 1rem; }
+</style>
