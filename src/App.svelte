@@ -1,37 +1,77 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onDestroy } from 'svelte';
   import type { Telemetry } from './lib/types/telemetry';
-  import { getTelemetry } from './lib/api/getTelemetry';
+  import { getTelemetry }  from './lib/api/getTelemetry';
 
-  let data: Telemetry | null = null;
-  let error = '';
+  // holds the latest telemetry, or null if none/faded out
+  let telemetry: Telemetry | null = null;
 
-  const API_URL = import.meta.env.VITE_TELEMETRY_API_URL as string;
-  const API_KEY = import.meta.env.VITE_TELEMETRY_API_KEY as string;
+  // track whether we're showing the cards
+  let showing = false;
 
-  async function fetchIt() {
-    error = '';
+  // timer handle so we can clean up if component unmounts early
+  let hideTimer: ReturnType<typeof setTimeout>;
+
+  // call the API and show cards
+  async function fetchTelemetry() {
     try {
-      data = await getTelemetry(API_URL, API_KEY);
-    } catch (e: any) {
-      error = e.message;
-      data = null;
+      telemetry = await getTelemetry();
+      showing   = true;
+
+      // after 30s, hide the cards
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        showing   = false;
+        telemetry = null;
+      }, 30_000);
+    } catch (err) {
+      console.error(err);
+      // optionally show an error card/message here
     }
   }
 
-  onMount(fetchIt);
+  // clear timer if component is torn down
+  onDestroy(() => clearTimeout(hideTimer));
 </script>
 
-<main>
-  <button on:click={fetchIt}>Fetch Telemetry</button>
+<style>
+  .cards {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .card {
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: .5rem;
+    flex: 1;
+    text-align: center;
+  }
+  button {
+    padding: .5rem 1rem;
+    font-size: 1rem;
+  }
+</style>
 
-  {#if error}
-    <p style="color: red">Error: {error}</p>
-  {:else if data}
-    <div>Latency: {data.latency}</div>
-    <div>Packet Loss: {data.packetLoss}</div>
-    <div>Throughput: {data.throughput}</div>
-  {:else}
-    <p>Loading…</p>
-  {/if}
-</main>
+{#if !showing}
+  <button on:click={fetchTelemetry}>
+    Fetch Telemetry
+  </button>
+{/if}
+
+{#if showing && telemetry}
+  <div class="cards">
+    <div class="card">
+      <h4>Latency</h4>
+      <p>{telemetry.latency}</p>
+    </div>
+    <div class="card">
+      <h4>Packet Loss</h4>
+      <p>{telemetry.packet_loss}</p>
+    </div>
+    <div class="card">
+      <h4>Throughput</h4>
+      <p>{telemetry.throughput}</p>
+    </div>
+  </div>
+{/if}
