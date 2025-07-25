@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
-  import { slide } from 'svelte/transition';
+  import { slide, fade } from 'svelte/transition';
   import type { Telemetry } from './lib/types/telemetry';
   import { getTelemetry }  from './lib/api/getTelemetry';
 
@@ -201,13 +201,19 @@
 </style>
 
 {#if !showing}
-  <button on:click={fetchTelemetry}>
+  <button
+    on:click={fetchTelemetry}
+    in:fade={{ duration: 200 }}
+    out:fade={{ duration: 200 }}>
     Fetch Telemetry
   </button>
 {/if}
 
 {#if showing && telemetry}
-  <div class="cards" in:slide={{ y: 20, duration: 400 }}>
+  <div
+    class="cards"
+    in:slide={{ y:20, duration:400 }}
+    out:slide={{ y:-20, duration:300 }}>
     <div class="card">
       <h4 class="glitch" data-text="Latency">Latency</h4>
       <p>{Number(telemetry.latency).toFixed(2)} ms</p>
