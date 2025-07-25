@@ -116,6 +116,87 @@
     min-width: auto;  /* allow full width */
     width: 100%;
   }
+ /* 1) Glitch animation */
+  @keyframes glitch {
+    0% {
+      clip: rect(10px, 9999px, 40px, 0);
+      transform: skew(0.5deg);
+    }
+    10% {
+      clip: rect(80px, 9999px, 110px, 0);
+      transform: skew(0.5deg);
+    }
+    20% {
+      clip: rect(50px, 9999px, 80px, 0);
+      transform: skew(0.5deg);
+    }
+    30% {
+      clip: rect(20px, 9999px, 50px, 0);
+      transform: skew(0.5deg);
+    }
+    40% {
+      clip: rect(70px, 9999px, 100px, 0);
+      transform: skew(0.5deg);
+    }
+    50% {
+      clip: rect(40px, 9999px, 70px, 0);
+      transform: skew(0.5deg);
+    }
+    60% {
+      clip: rect(10px, 9999px, 40px, 0);
+      transform: skew(0.5deg);
+    }
+    70% {
+      clip: rect(80px, 9999px, 110px, 0);
+      transform: skew(0.5deg);
+    }
+    80% {
+      clip: rect(50px, 9999px, 80px, 0);
+      transform: skew(0.5deg);
+    }
+    90% {
+      clip: rect(20px, 9999px, 50px, 0);
+      transform: skew(0.5deg);
+    }
+    100% {
+      clip: rect(70px, 9999px, 100px, 0);
+      transform: skew(0.5deg);
+    }
+  }
+
+  /* 2) Glitch wrapper */
+  .glitch {
+    position: relative;
+    display: inline-block;
+    color: #00ffff;
+    font-size: 1rem;
+    text-shadow: 0 0 5px #00ffff;
+    animation: glitch 2s infinite linear;
+  }
+
+  /* 3) Pseudo-layer for color offset */
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  .glitch::before {
+    left: 2px;
+    text-shadow: -2px 0 red;
+    animation: glitch 2s infinite linear reverse;
+  }
+
+  .glitch::after {
+    left: -2px;
+    text-shadow: -2px 0 blue;
+    animation: glitch 2s infinite linear;
+  }
 }
 </style>
 
@@ -128,15 +209,15 @@
 {#if showing && telemetry}
   <div class="cards" in:slide={{ y: 20, duration: 400 }}>
     <div class="card">
-      <h4>Latency</h4>
+      <h4 class="glitch" data-text="Latency">Latency</h4>
       <p>{Number(telemetry.latency).toFixed(2)} ms</p>
     </div>
     <div class="card">
-      <h4>Packet Loss</h4>
+      <h4 class="glitch" data-text="Packet Loss">Packet Loss</h4>
       <p>{Number(telemetry.packet_loss).toFixed(1)} %</p>
     </div>
     <div class="card">
-      <h4>Throughput</h4>
+      <h4 class="glitch" data-text="Throughput">Throughput</h4>
       <p>{Number(telemetry.throughput).toFixed(2)} Mbps</p>
     </div>
   </div>
