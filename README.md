@@ -1,6 +1,10 @@
 # Neuro // Telemetry
 
+[![Build & Deploy](https://github.com/gjb1088/DashboardAPI/actions/workflows/deploy.yml/badge.svg)](https://github.com/gjb1088/DashboardAPI/actions/workflows/deploy.yml)
+
 A neon, 8-bit style dashboard for checking live network telemetry from the NeuroDevOps stack from anywhere: latency, packet loss and throughput, refreshed every 10 seconds.
+
+**Live:** https://gjb1088.github.io/DashboardAPI/
 
 ![Dashboard showing latency, packet loss and throughput cards with sparklines](docs/screenshot.png)
 <sub>Screenshot uses simulated data.</sub>
@@ -44,6 +48,10 @@ npm run dev
 | --- | --- | --- |
 | `VITE_TELEMETRY_API_BASE` | `https://telemetry.burnthe.network` | Base URL only; the `/api/v1/...` path is added in code |
 | `VITE_TELEMETRY_API_KEY` | _(empty)_ | Optional. `VITE_` variables are compiled into the public JS, so leave this empty for public deploys and enter the key in the app instead |
+
+## Deployment
+
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) type-checks and builds every pull request, and deploys `main` to GitHub Pages. Pages must be set to **Settings → Pages → Source: GitHub Actions**. The API has to allow the `https://gjb1088.github.io` origin (CORS) for the browser to read responses.
 
 ## Stack
 
