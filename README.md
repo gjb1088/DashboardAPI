@@ -1,10 +1,10 @@
 # Neuro // Telemetry
 
-[![Build & Deploy](https://github.com/gjb1088/DashboardAPI/actions/workflows/deploy.yml/badge.svg)](https://github.com/gjb1088/DashboardAPI/actions/workflows/deploy.yml)
+[![CI](https://github.com/gjb1088/DashboardAPI/actions/workflows/ci.yml/badge.svg)](https://github.com/gjb1088/DashboardAPI/actions/workflows/ci.yml)
 
 A neon, 8-bit style dashboard for checking live network telemetry from the NeuroDevOps stack from anywhere: latency, packet loss and throughput, refreshed every 10 seconds.
 
-**Live:** https://gjb1088.github.io/DashboardAPI/
+**Live:** https://dashboardapi.pages.dev
 
 ![Dashboard showing latency, packet loss and throughput cards with sparklines](docs/screenshot.png)
 <sub>Screenshot uses simulated data.</sub>
@@ -51,7 +51,9 @@ npm run dev
 
 ## Deployment
 
-[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) type-checks and builds every pull request, and deploys `main` to GitHub Pages. Pages must be set to **Settings → Pages → Source: GitHub Actions**. The API has to allow the `https://gjb1088.github.io` origin (CORS) for the browser to read responses.
+Cloudflare Pages builds `main` to production and gives every branch its own preview URL. [`.github/workflows/ci.yml`](.github/workflows/ci.yml) type-checks and builds each pull request and push to `main`.
+
+The API has to allow the dashboard's origin (CORS), for example `https://dashboardapi.pages.dev`, and the `X-API-Key` header, for the browser to read responses.
 
 ## Stack
 
