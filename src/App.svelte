@@ -4,7 +4,6 @@
   import { METRICS } from './lib/metrics';
   import type { Telemetry } from './lib/types/telemetry';
   import { getTelemetry, TelemetryError, TELEMETRY_URL } from './lib/api/getTelemetry';
-  import { loadApiKey, saveApiKey, clearApiKey } from './lib/apiKey';
 
   const POLL_MS = 10_000;
   const TIMEOUT_MS = 8_000;
@@ -12,9 +11,6 @@
 
   let telemetry: Telemetry | null = null;
   let history: Telemetry[] = [];
-  let apiKey = loadApiKey();
-  let keyInput = '';
-  let needsKey = !apiKey;
   let live = true;
   let loading = false;
   let error: string | null = null;
@@ -23,19 +19,18 @@
   let pollTimer: ReturnType<typeof setTimeout>;
 
   async function refresh() {
-    if (loading || needsKey) return;
+    if (loading) return;
     loading = true;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
     try {
-      telemetry = await getTelemetry(apiKey, controller.signal);
+      telemetry = await getTelemetry(controller.signal);
       history = [...history, telemetry].slice(-HISTORY_LEN);
       lastSync = Date.now();
       error = null;
     } catch (err) {
       if (err instanceof TelemetryError && (err.status === 401 || err.status === 403)) {
-        needsKey = true;
-        error = 'ACCESS DENIED // key rejected';
+        error = 'ACCESS DENIED // check the TELEMETRY_API_KEY secret';
       } else if ((err as Error).name === 'AbortError') {
         error = `TIMEOUT // no response in ${TIMEOUT_MS / 1000}s`;
       } else {
@@ -50,7 +45,7 @@
   // Chain timeouts rather than setInterval so slow responses never overlap
   function schedule() {
     clearTimeout(pollTimer);
-    if (live && !needsKey && !document.hidden) pollTimer = setTimeout(tick, POLL_MS);
+    if (live && !document.hidden) pollTimer = setTimeout(tick, POLL_MS);
   }
 
   async function tick() {
@@ -67,24 +62,6 @@
     live = !live;
     if (live) refreshNow();
     else clearTimeout(pollTimer);
-  }
-
-  function submitKey() {
-    const key = keyInput.trim();
-    if (!key) return;
-    apiKey = key;
-    saveApiKey(key);
-    keyInput = '';
-    needsKey = false;
-    error = null;
-    refreshNow();
-  }
-
-  function forgetKey() {
-    clearApiKey();
-    clearTimeout(pollTimer);
-    apiKey = '';
-    needsKey = true;
   }
 
   // Stop polling in background tabs and catch up when the tab comes back
@@ -104,9 +81,8 @@
     };
   });
 
-  $: status = needsKey ? 'locked' : error ? 'fault' : !live ? 'paused' : 'live';
+  $: status = error ? 'fault' : !live ? 'paused' : 'live';
   $: ago = lastSync === null ? null : Math.max(0, Math.round((now - lastSync) / 1000));
-  $: host = TELEMETRY_URL.replace(/^https?:\/\//, '');
 </script>
 
 <div class="floor" aria-hidden="true"></div>
@@ -121,23 +97,6 @@
       {#if ago !== null}<span class="sync">sync {ago}s ago</span>{/if}
     </p>
   </header>
-
-  {#if needsKey}
-    <form class="panel" on:submit|preventDefault={submitKey}>
-      <label for="api-key"><span class="prompt">&gt;</span> Enter access key</label>
-      <div class="key-row">
-        <input
-          id="api-key"
-          type="password"
-          bind:value={keyInput}
-          autocomplete="off"
-          spellcheck="false"
-          placeholder="X-API-Key" />
-        <button type="submit" class="btn primary" disabled={!keyInput.trim()}>Connect</button>
-      </div>
-      <p class="hint">Saved in this browser only. It is never added to the site's code.</p>
-    </form>
-  {/if}
 
   {#if error}
     <p class="terminal-error" role="alert">
@@ -155,18 +114,15 @@
   </section>
 
   <footer class="controls">
-    <button class="btn primary" on:click={refreshNow} disabled={loading || needsKey}>
+    <button class="btn primary" on:click={refreshNow} disabled={loading}>
       {loading ? 'Syncing…' : 'Refresh'}
     </button>
-    <button class="btn" on:click={toggleLive} disabled={needsKey} aria-pressed={!live}>
+    <button class="btn" on:click={toggleLive} aria-pressed={!live}>
       {live ? 'Pause' : 'Resume'}
     </button>
-    {#if apiKey}
-      <button class="btn ghost" on:click={forgetKey}>Forget key</button>
-    {/if}
   </footer>
 
-  <p class="endpoint">{host} · every {POLL_MS / 1000}s</p>
+  <p class="endpoint">{TELEMETRY_URL} · every {POLL_MS / 1000}s</p>
 </main>
 
 <style>
@@ -288,8 +244,7 @@
     color: var(--dim);
   }
   .status.paused { --accent: var(--amber); }
-  .status.fault,
-  .status.locked { --accent: var(--red); }
+  .status.fault { --accent: var(--red); }
   .state {
     font-family: var(--font-pixel);
     font-size: 0.55rem;
@@ -315,46 +270,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
     gap: 1.25rem;
-  }
-
-  .panel {
-    margin-bottom: 1.5rem;
-    padding: 1.25rem;
-    background: var(--panel);
-    border: 1px solid color-mix(in srgb, var(--magenta) 60%, transparent);
-    box-shadow: 0 0 18px rgba(255, 43, 214, 0.25);
-  }
-  .panel label {
-    display: block;
-    margin-bottom: 0.9rem;
-    font-family: var(--font-pixel);
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    color: var(--magenta);
-  }
-  .key-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-  input {
-    flex: 1 1 14rem;
-    min-width: 0;
-    padding: 0.75rem 0.9rem;
-    font: inherit;
-    color: var(--text);
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid color-mix(in srgb, var(--cyan) 50%, transparent);
-    outline: none;
-  }
-  input:focus {
-    border-color: var(--cyan);
-    box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
-  }
-  .hint {
-    margin: 0.75rem 0 0;
-    font-size: 0.75rem;
-    color: var(--dim);
   }
 
   .prompt {
@@ -417,11 +332,6 @@
   }
   .btn.primary:hover:not(:disabled) {
     background: linear-gradient(90deg, #ff5ce0, #5cf6ff);
-  }
-  .btn.ghost {
-    color: var(--dim);
-    border-color: var(--dim);
-    background: transparent;
   }
 
   .endpoint {
