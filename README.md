@@ -4,7 +4,7 @@
 
 A neon, 8-bit style dashboard for checking live network telemetry from the NeuroDevOps stack from anywhere: latency, packet loss and throughput, refreshed every 10 seconds.
 
-**Live:** https://dashboardapi.pages.dev
+**Live:** https://api.burnthe.network
 
 ![Dashboard showing latency, packet loss and throughput cards with sparklines](docs/screenshot.png)
 <sub>Screenshot uses simulated data.</sub>
@@ -51,9 +51,9 @@ npm run dev
 
 ## Deployment
 
-Cloudflare Pages builds `main` to production and gives every branch its own preview URL. [`.github/workflows/ci.yml`](.github/workflows/ci.yml) type-checks and builds each pull request and push to `main`.
+Cloudflare Pages builds `main` to production at `api.burnthe.network` and gives every branch its own preview URL. [`.github/workflows/ci.yml`](.github/workflows/ci.yml) type-checks and builds each pull request and push to `main`.
 
-The API has to allow the dashboard's origin (CORS), for example `https://dashboardapi.pages.dev`, and the `X-API-Key` header, for the browser to read responses.
+The API has to allow the dashboard's origins (CORS): `https://api.burnthe.network` for production and `https://*.dashboardapi.pages.dev` for previews, with the `X-API-Key` header. CORS headers must be on every response, not only the `OPTIONS` preflight.
 
 ## Stack
 
