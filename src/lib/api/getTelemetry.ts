@@ -1,10 +1,7 @@
 import type { Telemetry } from '../types/telemetry';
 
-const API_BASE = (
-  import.meta.env.VITE_TELEMETRY_API_BASE || 'https://telemetry.burnthe.network'
-).replace(/\/+$/, '');
-
-export const TELEMETRY_URL = `${API_BASE}/api/v1/telemetry/network`;
+// Same-origin proxy (functions/api/telemetry.ts) that adds the API key server-side
+export const TELEMETRY_URL = '/api/telemetry';
 
 export class TelemetryError extends Error {
   constructor(message: string, readonly status?: number) {
@@ -13,17 +10,13 @@ export class TelemetryError extends Error {
   }
 }
 
-export async function getTelemetry(apiKey: string, signal?: AbortSignal): Promise<Telemetry> {
+export async function getTelemetry(signal?: AbortSignal): Promise<Telemetry> {
   let res: Response;
   try {
-    res = await fetch(TELEMETRY_URL, {
-      headers: apiKey ? { 'X-API-Key': apiKey } : {},
-      signal
-    });
+    res = await fetch(TELEMETRY_URL, { signal });
   } catch (err) {
     if ((err as Error).name === 'AbortError') throw err;
-    // Offline, DNS failure and CORS rejections all surface as a bare TypeError
-    throw new TelemetryError(`NO LINK // ${TELEMETRY_URL} unreachable (offline or CORS)`);
+    throw new TelemetryError(`NO LINK // ${TELEMETRY_URL} unreachable (offline?)`);
   }
 
   if (!res.ok) {

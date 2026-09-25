@@ -14,24 +14,25 @@ A neon, 8-bit style dashboard for checking live network telemetry from the Neuro
 - **Live polling** every 10s, with pause/resume. Polling stops while the tab is in the background and catches up when you return.
 - **Health at a glance.** Each metric turns cyan, amber or red against thresholds in [`src/lib/metrics.ts`](src/lib/metrics.ts).
 - **Sparklines** of the last 60 readings, plus values that count up to each new reading.
-- **Key entry in the browser.** The API key is typed in once and kept in that browser's local storage, so it never ships in the public bundle.
-- **Clear failures.** Timeouts, rejected keys and network or CORS errors are shown on the page as terminal-style messages.
+- **Key kept server-side.** A Cloudflare Pages Function adds the API key to each request, so it never reaches the browser or the public bundle.
+- **Clear failures.** Timeouts, rejected keys and network errors are shown on the page as terminal-style messages.
 - Responsive down to phone width, and honours `prefers-reduced-motion`.
 
 ## How it works
 
 ```
-browser ──X-API-Key──▶ telemetry.burnthe.network/api/v1/telemetry/network ──▶ NeuroDevOps
-                        (Cloudflare → Caddy → API)
+browser ──▶ /api/telemetry ──X-API-Key──▶ telemetry.burnthe.network/api/v1/telemetry/network ──▶ NeuroDevOps
+            (Pages Function,               (Cloudflare → Caddy → FastAPI)
+             holds the secret)
 ```
 
-The endpoint returns JSON with `latency` (ms), `packet_loss` (%) and `throughput` (Mbps).
+The endpoint returns JSON with `latency` (ms), `packet_loss` (%) and `throughput` (Mbps, shown as Gbps). The proxy lives in [`functions/api/telemetry.ts`](functions/api/telemetry.ts); in `npm run dev` the Vite dev server plays the same role.
 
 ## Run locally
 
 ```bash
 npm install
-cp .env.example .env   # optional; the defaults point at the live API
+cp .env.example .env   # then set TELEMETRY_API_KEY for the dev proxy
 npm run dev
 ```
 
@@ -46,14 +47,16 @@ npm run dev
 
 | Variable | Default | Notes |
 | --- | --- | --- |
-| `VITE_TELEMETRY_API_BASE` | `https://telemetry.burnthe.network` | Base URL only; the `/api/v1/...` path is added in code |
-| `VITE_TELEMETRY_API_KEY` | _(empty)_ | Optional. `VITE_` variables are compiled into the public JS, so leave this empty for public deploys and enter the key in the app instead |
+| `TELEMETRY_API_KEY` | _(none, required)_ | Sent as `X-API-Key` by the proxy. Store it as a **Secret** in Cloudflare Pages |
+| `TELEMETRY_API_BASE` | `https://telemetry.burnthe.network` | Base URL only; the `/api/v1/...` path is added in code |
+
+Set both under the Pages project's **Settings → Variables and secrets** for Production and Preview. Never prefix them with `VITE_`: Vite compiles those into the public JavaScript, even when stored as a Secret.
 
 ## Deployment
 
 Cloudflare Pages builds `main` to production at `api.burnthe.network` and gives every branch its own preview URL. [`.github/workflows/ci.yml`](.github/workflows/ci.yml) type-checks and builds each pull request and push to `main`.
 
-The API has to allow the dashboard's origins (CORS): `https://api.burnthe.network` for production and `https://*.dashboardapi.pages.dev` for previews, with the `X-API-Key` header. CORS headers must be on every response, not only the `OPTIONS` preflight.
+Because the browser only talks to its own origin, the API needs no CORS rules for the dashboard.
 
 ## Stack
 
