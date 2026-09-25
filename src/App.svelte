@@ -6,11 +6,15 @@
 
   let telemetry: Telemetry | null = null;
   let showing = false;
+  let loading = false;
+  let error: string | null = null;
   let hideTimer: ReturnType<typeof setTimeout>;
 
   async function fetchTelemetry() {
+    loading = true;
+    error = null;
     try {
-      telemetry = await getTelemetry();
+      telemetry = await getTelemetry(import.meta.env.VITE_TELEMETRY_API_KEY ?? '');
       showing   = true;
       clearTimeout(hideTimer);
       hideTimer = setTimeout(() => {
@@ -19,6 +23,9 @@
       }, 15_000);
     } catch (err) {
       console.error(err);
+      error = (err as Error).message;
+    } finally {
+      loading = false;
     }
   }
 
@@ -116,7 +123,9 @@
     min-width: auto;  /* allow full width */
     width: 100%;
   }
- /* 1) Glitch animation */
+}
+
+  /* 1) Glitch animation */
   @keyframes glitch {
     0% {
       clip: rect(10px, 9999px, 40px, 0);
@@ -197,23 +206,34 @@
     text-shadow: -2px 0 blue;
     animation: glitch 2s infinite linear;
   }
-}
+
+  .error {
+    margin-top: 1.5rem;
+    color: #ff3b5c;
+    font-size: 0.7rem;
+    text-align: center;
+  }
 </style>
 
 {#if !showing}
   <button
     on:click={fetchTelemetry}
+    disabled={loading}
     in:fade={{ duration: 200 }}
     out:fade={{ duration: 200 }}>
-    Fetch Telemetry
+    {loading ? 'Fetching…' : 'Fetch Telemetry'}
   </button>
+{/if}
+
+{#if error}
+  <p class="error" role="alert">{error}</p>
 {/if}
 
 {#if showing && telemetry}
   <div
     class="cards"
-    in:slide={{ y:20, duration:400 }}
-    out:slide={{ y:-20, duration:300 }}>
+    in:slide={{ duration: 400 }}
+    out:slide={{ duration: 300 }}>
     <div class="card">
       <h4 class="glitch" data-text="Latency">Latency</h4>
       <p>{Number(telemetry.latency).toFixed(2)} ms</p>
