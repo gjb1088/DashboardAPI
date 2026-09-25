@@ -31,9 +31,11 @@
     previous = next;
   }
 
-  $: onValue(value);
+  // Convert from the API's unit to the displayed one (e.g. Mbps → Gbps)
+  $: shownValue = value === null ? null : value * (def.scale ?? 1);
+  $: onValue(shownValue);
   let health: Health | 'idle';
-  $: health = value === null ? 'idle' : healthOf(def, value);
+  $: health = shownValue === null ? 'idle' : healthOf(def, shownValue);
 
   onDestroy(() => clearTimeout(glitchTimer));
 </script>
@@ -45,7 +47,7 @@
       <span class="badge">{BADGES[health]}</span>
     </header>
     <p class="value">
-      <span class="num">{value === null ? '--' : $shown.toFixed(def.decimals)}</span>
+      <span class="num">{shownValue === null ? '--' : $shown.toFixed(def.decimals)}</span>
       <span class="unit">{def.unit}</span>
     </p>
     <Sparkline values={history} />
