@@ -26,7 +26,7 @@ browser ──▶ /api/telemetry ──X-API-Key──▶ telemetry.burnthe.netw
              holds the secret)
 ```
 
-The endpoint returns JSON with `latency` (ms), `packet_loss` (%) and `throughput` (Mbps, shown as Gbps). The proxy lives in [`functions/api/telemetry.ts`](functions/api/telemetry.ts); in `npm run dev` the Vite dev server plays the same role.
+The endpoint returns JSON with `latency` (ms), `packet_loss` (%) and `throughput` (Mbps, from a WAN speed test). The proxy lives in [`functions/api/telemetry.ts`](functions/api/telemetry.ts); in `npm run dev` the Vite dev server plays the same role.
 
 ## Run locally
 

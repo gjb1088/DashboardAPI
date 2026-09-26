@@ -16,11 +16,11 @@ export interface MetricDef {
 }
 
 // Thresholds are starting points; tune them to what's normal for the network.
-// The API reports throughput in Mbps; it is shown in Gbps (baseline ~7 Gbps).
+// Throughput comes from a WAN speed test, reported in Mbps.
 export const METRICS: MetricDef[] = [
   { key: 'latency',     label: 'Latency',     unit: 'ms',   decimals: 1, higherIsBetter: false, warn: 50,  bad: 150 },
   { key: 'packet_loss', label: 'Packet Loss', unit: '%',    decimals: 2, higherIsBetter: false, warn: 0.5, bad: 2 },
-  { key: 'throughput',  label: 'Throughput',  unit: 'Gbps', decimals: 2, scale: 0.001, higherIsBetter: true, warn: 2, bad: 0.5 }
+  { key: 'throughput',  label: 'Throughput',  unit: 'Mbps', decimals: 1, higherIsBetter: true,  warn: 100, bad: 25 }
 ];
 
 export function healthOf(def: MetricDef, value: number): Health {
